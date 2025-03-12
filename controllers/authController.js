@@ -13,20 +13,20 @@ const transporter = nodemailer.createTransport({
     }
 });
 
-// Generate OTP
+// Generate OTP (4 digits)
 const generateOTP = () => crypto.randomInt(1000, 9999).toString();
 
 // Register User and Send OTP
 exports.register = async (req, res) => {
     try {
-        const { fullname, name, email, password, confirmPassword } = req.body;
+        const { firstname, lastname, phone, email, password, confirmPassword } = req.body;
 
         // Validate password confirmation
         validatePassword(password, confirmPassword);
 
-        let user = await User.findOne({ email });
+        let user = await User.findOne({ $or: [{ email }, { phone }] });
 
-        if (user) return res.status(400).json({ message: 'User already exists' });
+        if (user) return res.status(400).json({ message: 'User with this email or phone already exists' });
 
         // Encrypt password before saving
         const salt = await bcrypt.genSalt(10);
@@ -35,7 +35,7 @@ exports.register = async (req, res) => {
         const otp = generateOTP();
         const otpExpiry = new Date(Date.now() + 10 * 60 * 1000);
 
-        user = new User({ fullname, name, email, password: hashedPassword, otp, otpExpiry });
+        user = new User({ firstname, lastname, phone, email, password: hashedPassword, otp, otpExpiry });
         await user.save();
 
         await transporter.sendMail({
@@ -118,7 +118,7 @@ exports.login = async (req, res) => {
             return res.status(400).json({ message: 'Email not verified. Please verify OTP.' });
         }
 
-        req.session.user = { id: user._id, email: user.email, name: user.name };
+        req.session.user = { id: user._id, email: user.email, name: user.firstname };
         res.json({ message: 'Login successful' });
     } catch (error) {
         res.status(500).json({ message: 'Error logging in', error });
