@@ -13,7 +13,7 @@ app.use(session({
         secret: 'supersecretkey',
         resave: false,
         saveUninitilized: true,
-        cookie: {secure:false}
+        cookie: {secure:true}
 }));
 
 const authRoutes = require('./routes/authRoutes');
