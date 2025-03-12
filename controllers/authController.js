@@ -16,7 +16,7 @@ const transporter = nodemailer.createTransport({
 // Generate OTP (4 digits)
 const generateOTP = () => crypto.randomInt(1000, 9999).toString();
 
-// Register User and Send OTP
+// Register User and Save Email in Session
 exports.register = async (req, res) => {
     try {
         const { firstname, lastname, phone, email, password, confirmPassword } = req.body;
@@ -38,6 +38,9 @@ exports.register = async (req, res) => {
         user = new User({ firstname, lastname, phone, email, password: hashedPassword, otp, otpExpiry });
         await user.save();
 
+        // Save email in session so user doesn't need to type it again
+        req.session.email = email;
+
         await transporter.sendMail({
             from: 'databasetestbj@gmail.com',
             to: email,
@@ -45,16 +48,20 @@ exports.register = async (req, res) => {
             text: `Your OTP is: ${otp}`
         });
 
-        res.status(201).json({ message: 'User registered. Please verify OTP sent to email.' });
+        res.status(201).json({ message: 'User registered. Please verify OTP.' });
     } catch (error) {
         res.status(500).json({ message: error.message || 'Error registering user', error });
     }
 };
 
-// Verify OTP
+// Verify OTP Using Session Email
 exports.verifyOTP = async (req, res) => {
     try {
-        const { email, otp } = req.body;
+        // Retrieve email from session
+        const email = req.session.email;
+        if (!email) return res.status(400).json({ message: 'Session expired. Please register again.' });
+
+        const { otp } = req.body;
         const user = await User.findOne({ email });
 
         if (!user) return res.status(400).json({ message: 'User not found' });
@@ -68,6 +75,9 @@ exports.verifyOTP = async (req, res) => {
         user.otp = undefined;
         user.otpExpiry = undefined;
         await user.save();
+
+        // Clear session email after successful verification
+        req.session.email = undefined;
 
         res.json({ message: 'Email verified successfully. You can now log in.' });
     } catch (error) {
