@@ -21,5 +21,8 @@ const authRoutes = require('./routes/authRoutes');
 app.use('/api/auth',authRoutes);
 const PORT = 3000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+// app.get("/api/welcome", (req, res) => {
+//         res.status(200).send("welcome");
+// })
 
 
