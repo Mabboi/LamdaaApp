@@ -38,8 +38,8 @@ exports.register = async (req, res) => {
         user = new User({ firstname, lastname, phone, email, password: hashedPassword, otp, otpExpiry });
         await user.save();
 
-        // Save email in session so user doesn't need to type it again
-        req.session.email = email;
+        // Store email in session
+        req.session.user_email = email;
 
         await transporter.sendMail({
             from: 'databasetestbj@gmail.com',
@@ -48,7 +48,7 @@ exports.register = async (req, res) => {
             text: `Your OTP is: ${otp}`
         });
 
-        res.status(201).json({ message: 'User registered. Please verify OTP.' });
+        res.status(201).json({ message: 'User registered. Please verify OTP.', email });
     } catch (error) {
         res.status(500).json({ message: error.message || 'Error registering user', error });
     }
@@ -58,7 +58,7 @@ exports.register = async (req, res) => {
 exports.verifyOTP = async (req, res) => {
     try {
         // Retrieve email from session
-        const email = req.session.email;
+        const email = req.session.user_email;
         if (!email) return res.status(400).json({ message: 'Session expired. Please register again.' });
 
         const { otp } = req.body;
@@ -76,8 +76,8 @@ exports.verifyOTP = async (req, res) => {
         user.otpExpiry = undefined;
         await user.save();
 
-        // Clear session email after successful verification
-        req.session.email = undefined;
+        // Clear session after successful verification
+        req.session.user_email = null;
 
         res.json({ message: 'Email verified successfully. You can now log in.' });
     } catch (error) {
