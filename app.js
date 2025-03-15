@@ -7,6 +7,9 @@ connectDB();
 
 const app = express();
 app.use(express.json()); // Middleware to parse JSON
+app.use(express.urlencoded({
+        extended: true
+}));
 
 
 app.use(session({
