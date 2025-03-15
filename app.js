@@ -10,7 +10,7 @@ const app = express();
 
 // // Enable CORS for all origins
 app.use(cors({
-    origin: "https://lamdaaapp-4.onrender.com", // Change this to your frontend URL
+    origin: "*", // Change this to your frontend URL
     methods: "GET,POST,PUT,DELETE",
     allowedHeaders: "Content-Type,Authorization",
     credentials: true // Allow cookies/session handling
