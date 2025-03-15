@@ -20,12 +20,24 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+//Manually set CORS headers
+app.use((req, res, next) => {
+        res.header("Access-Control-Allow-Origin", "http://localhost:3000");
+        res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
+        res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+        res.header("Access-Control-Allow-Credentials", "true");
+        next();
+    });
+
 // Configure session
 app.use(session({
     secret: 'supersecretkey',
     resave: false,
     saveUninitialized: true,
-    cookie: { secure: false } // Set to `true` if using HTTPS
+    cookie: { secure: false,
+              httpOnly: true,
+              sameSite: 'lax'  
+     } // Set to `true` if using HTTPS
 }));
 
 // Import and use auth routes
