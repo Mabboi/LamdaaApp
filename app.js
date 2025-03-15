@@ -10,9 +10,10 @@ const app = express();
 
 // Enable CORS for all origins
 app.use(cors({
-    origin: "*", // Allows access from any device or website
+    origin: "http://localhost:3000", // Allows access from local website
     methods: "GET,POST,PUT,DELETE",
-    allowedHeaders: "Content-Type,Authorization"
+    allowedHeaders: "Content-Type,Authorization",
+    credentials: true
 }));
 
 // Middleware to parse JSON and URL-encoded data
