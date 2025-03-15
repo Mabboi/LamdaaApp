@@ -10,7 +10,7 @@ const app = express();
 
 // Enable CORS for all origins
 app.use(cors({
-    origin: "http://192.168.18.29:3000", // Allows access from local website
+    origin: "*", // Allows access from local website
     allowedHeaders: "Content-Type,Authorization",
     credentials: true
 }));
