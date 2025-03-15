@@ -8,16 +8,28 @@ connectDB();
 
 const app = express();
 
-// Enable CORS for all origins
-app.use(cors({
-    origin: "*", // Allows access from local website
-    allowedHeaders: "Content-Type,Authorization",
-    credentials: true
-}));
+// // Enable CORS for all origins
+// app.use(cors({
+//     origin: "*", // Allows access from local website
+//     allowedHeaders: "Content-Type,Authorization",
+//     credentials: true
+// }));
 
-// Middleware to parse JSON and URL-encoded data
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+// // Middleware to parse JSON and URL-encoded data
+// app.use(express.json());
+// app.use(express.urlencoded({ extended: true }));
+
+const allowedOrigins = process.env.ALLOWED_ORIGINS;
+const corsOptions = {
+    origin: function (origin, callback) {
+        if (allowedOrigins.includes(origin) || !origin) {
+            callback(null, true);
+        } else {
+            callback(new Error("Not allowed by CORS"));
+        }
+    },
+};
+app.use(cors());
 
 // //Manually set CORS headers
 // app.use((req, res, next) => {
