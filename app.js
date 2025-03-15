@@ -10,8 +10,7 @@ const app = express();
 
 // Enable CORS for all origins
 app.use(cors({
-    origin: "http://localhost:3000", // Allows access from local website
-    methods: "GET,POST,PUT,DELETE",
+    origin: "http://192.168.18.29:3000", // Allows access from local website
     allowedHeaders: "Content-Type,Authorization",
     credentials: true
 }));
@@ -22,7 +21,7 @@ app.use(express.urlencoded({ extended: true }));
 
 //Manually set CORS headers
 app.use((req, res, next) => {
-        res.header("Access-Control-Allow-Origin", "http://localhost:3000");
+        res.header("Access-Control-Allow-Origin", "http://192.168.18.29:3000");
         res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
         res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
         res.header("Access-Control-Allow-Credentials", "true");
