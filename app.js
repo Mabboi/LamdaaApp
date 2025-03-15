@@ -9,12 +9,12 @@ connectDB();
 const app = express();
 
 // // Enable CORS for all origins
-app.use(cors({
-    origin: "*", // Change this to your frontend URL
-    methods: "GET,POST,PUT,DELETE",
-    allowedHeaders: "Content-Type,Authorization",
-    credentials: true // Allow cookies/session handling
-}));
+// app.use(cors({
+//     origin: "*", // Change this to your frontend URL
+//     methods: "GET,POST,PUT,DELETE",
+//     allowedHeaders: "Content-Type,Authorization",
+//     credentials: true // Allow cookies/session handling
+// }));
 // Middleware to parse JSON and URL-encoded data
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -32,13 +32,18 @@ app.use(express.urlencoded({ extended: true }));
 
 
 // //Manually set CORS headers
-// app.use((req, res, next) => {
-//         res.header("Access-Control-Allow-Origin", "http://192.168.18.29:3000");
-//         res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
-//         res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
-//         res.header("Access-Control-Allow-Credentials", "true");
-//         next();
-//     });
+app.use((req, res, next) => {
+    res.setHeader('Access-Control-Allow-Origin', '*'); // Allow all origins (not recommended for production)
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    
+    // Handle preflight requests
+    if (req.method === 'OPTIONS') {
+      return res.sendStatus(200);
+    }
+  
+    next();
+  });
 
 // Configure session
 app.use(session({
